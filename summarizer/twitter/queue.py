@@ -17,18 +17,21 @@ FREQUENCY = 1 * 60 # 1 min
 def process(status_id):
     "Process specified status."
     session = db.Session()
+    failed = False # yet
+    status = session.query(Status).filter_by(status_id=status_id).one()
     try:
-        status = session.query(Status).filter_by(status_id=status_id).one()
         job = StatusJob(status)
         job.do(session)
-        status = session.merge(status) # no need
-        status.state = job.failed and State.FAIL or State.DONE
-        session.commit()
+        failed = job.failed # may be True
         return job.result
     except:
         session.rollback()
+        failed = True # obviously
         raise
     finally:
+        status = session.merge(status) # no need
+        status.state = failed and State.FAIL or State.DONE
+        session.commit()
         session.close()
 
 def enqueue(statuses=[]):
