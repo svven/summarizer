@@ -17,7 +17,7 @@ QUEUES = (SUMMARIZER_QUEUE, ) = ("summarizer", )
 
 ## Summary
 # SUMMARY_USER_AGENT = 'summary-extraction 0.2'
-SUMMARY_ADBLOCK_EASYLIST_URL = 'easylist.txt' #\
-	# 'https://easylist-downloads.adblockplus.org/easylist.txt'
-SUMMARY_ADBLOCK_EXTRALIST_URL = 'extralist.txt' #\
-	# 'https://dl.dropboxusercontent.com/u/134594/svven/extralist.txt'
+SUMMARY_ADBLOCK_EASYLIST_URL = 'easylist.txt' and \
+	'https://easylist-downloads.adblockplus.org/easylist.txt' #
+SUMMARY_ADBLOCK_EXTRALIST_URL = 'extralist.txt' and \
+	'https://dl.dropboxusercontent.com/u/134594/svven/extralist.txt' #

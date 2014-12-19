@@ -10,3 +10,5 @@ echo 'Fake rqworker'
 
 ## Pass in the command line args just like the regular rqworker
 python -c 'from summarizer import worker' $@
+
+deactivate

@@ -4,6 +4,10 @@ Summarizer worker.
 import sys
 from rq import Queue, Connection, Worker
 
+import requests
+# https://urllib3.readthedocs.org/en/latest/security.html
+requests.packages.urllib3.disable_warnings()
+
 # Preload libraries
 from . import config, r, summary
 rules = summary.filters.AdblockURLFilter.rules # force
