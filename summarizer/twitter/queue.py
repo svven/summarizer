@@ -12,10 +12,12 @@ from rq import Connection, Queue
 QUEUE = config.SUMMARIZER_QUEUE
 LIMIT = 300 # statuses
 FREQUENCY = 1 * 60 # 1 min
+RESULT_TTL = 1 * 60 # 1 min
 
 
 def process(status_id):
     "Process specified status."
+    print "Start process"
     session = db.Session()
     failed = False # yet
     status = session.query(Status).filter_by(status_id=status_id).one()
@@ -33,6 +35,7 @@ def process(status_id):
         status.state = failed and State.FAIL or State.DONE
         session.commit()
         session.close()
+        print "End process"
 
 def enqueue(statuses=[]):
     "Enqueue statuses to process."
@@ -50,7 +53,7 @@ def enqueue(statuses=[]):
             for status in statuses:
                 status_id = status.status_id
                 job = q.enqueue_call(func=process, args=(status_id,), 
-                    description=status) # job_id=unicode(status_id), result_ttl=0
+                    description=status, result_ttl=RESULT_TTL) # job_id=unicode(status_id), result_ttl=0
                 status.state = State.BUSY
                 session.commit()
                 print '%s Queued: %s' % (time.strftime('%X'), status)

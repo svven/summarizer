@@ -74,12 +74,14 @@ class StatusJob(object):
         Get it from database, or use `summary` to create it. The returned
         `link.url` is most probably different from the `url` input param.
         """
-        def check_url(url):
+        def check_url(url,
+            get_link=lambda u: self.get_link(session, u)):
             """
             Raise for existing or restricted URLs.
             Param `url` is actually `summary.url` while extracting.
             """
-            link = self.get_link(session, url)
+            print "Checking"
+            link = get_link(url) # self.get_link(session, url)
             if link: # existing
                 raise ExistingLinkException()
 
@@ -89,22 +91,24 @@ class StatusJob(object):
         else: # summarize
             summary = Summary(url)
             try:
+                print "Summarizing"
                 summary.extract(check_url=check_url)
+                print "Summarized"
+                link = Link(summary) # new
+                session.add(link)
+                result = NEW_LINK
             except ExistingLinkException: # existing
                 link = self.get_link(session, summary.url)
                 result = EXISTING_LINK
             # except RestrictedLinkException:
             #     result = RESTRICTED_LINK
-            else: # new
-                link = Link(summary)
-                session.add(link)
-                result = NEW_LINK
         return link, result
 
     def do(self, session):
         """
         Create the news link based on status URL.
         """
+        print "Start job"
         assert self.status.url, 'URL missing, can\'t do the job.'
         self.started_at = datetime.datetime.utcnow()
         link = result = None
@@ -140,4 +144,5 @@ class StatusJob(object):
             self.load_mark(session) # needs self.status.link_id set
         session.commit() # outside
         self.ended_at = datetime.datetime.utcnow()
+        print "End job"
 
