@@ -89,16 +89,16 @@ class StatusJob(object):
         if link: # existing
             result = EXISTING_LINK
         else: # summarize
-            summary = Summary(url)
+            s = Summary(url)
             try:
                 print "Summarizing"
-                summary.extract(check_url=check_url)
+                s.extract(check_url=check_url)
                 print "Summarized"
-                link = Link(summary) # new
+                link = Link(s) # new
                 session.add(link)
                 result = NEW_LINK
             except ExistingLinkException: # existing
-                link = self.get_link(session, summary.url)
+                link = self.get_link(session, s.url)
                 result = EXISTING_LINK
             # except RestrictedLinkException:
             #     result = RESTRICTED_LINK
