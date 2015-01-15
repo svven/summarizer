@@ -52,11 +52,12 @@ def enqueue(statuses=[]):
             q = Queue(QUEUE)
             for status in statuses:
                 status_id = status.status_id
+                description = unicode(status).encode('utf8')
                 job = q.enqueue_call(func=process, args=(status_id,), 
-                    description=status, result_ttl=RESULT_TTL) # job_id=unicode(status_id), result_ttl=0
+                    description=description, result_ttl=RESULT_TTL) # job_id=unicode(status_id), result_ttl=0
                 status.state = State.BUSY
                 session.commit()
-                print '%s Queued: %s' % (time.strftime('%X'), status)
+                print '%s Queued: %s' % (time.strftime('%X'), description)
     except:
         session.rollback()
         raise
