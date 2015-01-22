@@ -1,7 +1,7 @@
 """
 Summarizer Twitter job.
 """
-from . import config, db, summary
+from . import config, db, summary, aggregator
 
 from summary import Summary, HTMLParseError
 from requests.exceptions import HTTPError, Timeout
@@ -9,6 +9,8 @@ from requests.exceptions import HTTPError, Timeout
 from database.db import IntegrityError
 from database.twitter.models import User, Status
 from database.news.models import Link, Reader, Source, Mark
+
+from aggregator.models import Reader as AggregatorReader
 
 import datetime
 
@@ -146,3 +148,12 @@ class StatusJob(object):
         self.ended_at = datetime.datetime.utcnow()
         print "End job"
 
+
+@db.event.listens_for(Mark, "after_insert")
+def after_insert_link(mapper, connection, target):
+    print "Marking"
+    try:
+        reader = AggregatorReader(target.reader_id)
+        reader.mark(target.link_id, target.moment)
+    except Exception, e:
+        print "Aggregator mark failed: %s" % repr(e)
