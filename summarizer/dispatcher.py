@@ -1,7 +1,9 @@
 """
 Summarizer dispatcher.
 """
-from . import logging
+import config
+import logging, logging.config, yaml
+logging.config.dictConfig(yaml.load(config.LOGGING))
 logger = logging.getLogger(__name__)
 
 import time
