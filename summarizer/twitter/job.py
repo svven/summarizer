@@ -1,6 +1,9 @@
 """
 Summarizer Twitter job.
 """
+import logging
+logger = logging.getLogger(__name__)
+
 from . import config, db, summary, aggregator
 
 from summary import Summary, HTMLParseError
@@ -82,7 +85,7 @@ class StatusJob(object):
             Raise for existing or restricted URLs.
             Param `url` is actually `summary.url` while extracting.
             """
-            print "Checking"
+            logger.debug("Checking")
             link = get_link(url) # self.get_link(session, url)
             if link: # existing
                 raise ExistingLinkException()
@@ -93,9 +96,9 @@ class StatusJob(object):
         else: # summarize
             s = Summary(url)
             try:
-                print "Summarizing"
+                logger.debug("Summarizing")
                 s.extract(check_url=check_url)
-                print "Summarized"
+                logger.debug("Summarized")
                 link = Link(s) # new
                 session.add(link)
                 result = NEW_LINK
@@ -110,7 +113,7 @@ class StatusJob(object):
         """
         Create the news link based on status URL.
         """
-        print "Start job"
+        logger.debug("Start job")
         assert self.status.url, 'URL missing, can\'t do the job.'
         self.started_at = datetime.datetime.utcnow()
         link = result = None
@@ -126,34 +129,37 @@ class StatusJob(object):
             link = self.get_link(session, url)
             if link: # existing
                 result = EXISTING_LINK
-                print repr(e), self.status.id # warning
             else: # existing but not found, fail
                 self.failed = True # redundant
+                logger.error("Existing link not found", 
+                    exc_info=True, extra={'data': {'id': self.status.id, 'url': url}})
                 raise e
-        except (HTTPError, HTMLParseError), e:
+        except (HTTPError, HTMLParseError), e: # , Timeout
             session.rollback()
             result = BAD_LINK
             self.failed = True
-            print repr(e), self.status.id # warning
-        # except Timeout, e:
-        #     raise e
+            logger.warning("Bad: %s", 
+                unicode(link or self.status).encode('utf8'),
+                exc_info=True, extra={'data': {'id': self.status.id, 'url': url}})
+        else:
+            logger.info(result.capitalize() + ": %s", 
+                unicode(link or self.status).encode('utf8'),
+                extra={'data': {'id': self.status.id, 'url': url}})
         self.result = result
-        print "%s: %s" % (result.capitalize(), 
-            unicode(link or self.status).encode('utf8'))
         if link and link.id: # new or existing
             self.link = link
             self.update_status(session) # sets self.status.link_id
             self.load_mark(session) # needs self.status.link_id set
         session.commit() # outside
         self.ended_at = datetime.datetime.utcnow()
-        print "End job"
+        logger.debug("End job")
 
 
 @db.event.listens_for(Mark, "after_insert")
 def after_insert_link(mapper, connection, target):
-    print "Marking"
+    logger.debug("Marking")
     try:
         reader = AggregatorReader(target.reader_id)
         reader.mark(target.link_id, target.moment)
     except Exception, e:
-        print "Aggregator mark failed: %s" % repr(e)
+        logger.error("Aggregator mark failed", exc_info=True)

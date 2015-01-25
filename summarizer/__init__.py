@@ -1,9 +1,7 @@
 """
 Summarizer initialization.
 """
-import config
-
-import database, redis, summary, aggregator
+import config, database, redis, summary, aggregator
 
 ## Database
 database.config.sqlalchemy_url = config.sqlalchemy_url

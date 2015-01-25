@@ -1,9 +1,12 @@
 """
 Summarizer Twitter queue.
 """
-from . import config, db, r
-from job import StatusJob
+import logging
+logger = logging.getLogger(__name__)
 
+from . import config, db, r
+
+from job import StatusJob
 from database.twitter.models import User, State, Status
 
 import time, datetime
@@ -17,7 +20,7 @@ RESULT_TTL = 1 * 60 # 1 min
 
 def process(status_id):
     "Process specified status."
-    print "Start process"
+    logger.debug("Start process")
     session = db.Session()
     failed = False # yet
     status = session.query(Status).filter_by(status_id=status_id).one()
@@ -29,13 +32,16 @@ def process(status_id):
     except:
         session.rollback()
         failed = True # obviously
+        logger.warning("Fail: %s", 
+            unicode(status).encode('utf8'),
+            exc_info=True, extra={'data': {'id': status.id, 'url': status.url}})
         raise
     finally:
         status = session.merge(status) # no need
         status.state = failed and State.FAIL or State.DONE
         session.commit()
         session.close()
-        print "End process"
+        logger.debug("End process")
 
 def enqueue(statuses=[]):
     "Enqueue statuses to process."
@@ -57,7 +63,7 @@ def enqueue(statuses=[]):
                     description=description, result_ttl=RESULT_TTL) # job_id=unicode(status_id), result_ttl=0
                 status.state = State.BUSY
                 session.commit()
-                print '%s Queued: %s' % (time.strftime('%X'), description)
+                logger.debug('Queued: %s', description)
     except:
         session.rollback()
         raise
