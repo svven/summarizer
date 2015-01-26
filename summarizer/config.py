@@ -33,12 +33,18 @@ SENTRY_DSN = ''
 ## Logging
 LOGGING = '''
 version: 1
-disable_existing_loggers: False
-formatters:
-    console:
-        format: '%(asctime)s %(message)s'
-        # format: '[%(asctime)s][%(levelname)s] %(name)s %(filename)s:%(funcName)s:%(lineno)d | %(message)s'
-        datefmt: '%H:%M:%S'
+disable_existing_loggers: true
+root:
+    level: INFO
+    handlers: [console]
+    propagate: false
+loggers:
+    summary:
+        # handlers: [console]
+        level: WARNING
+    summarizer:
+        handlers: [sentry]
+        level: DEBUG
 handlers:
     console:
         level: DEBUG
@@ -48,12 +54,10 @@ handlers:
         level: INFO
         class: raven.handlers.logging.SentryHandler
         dsn: {dsn}
-loggers:
-    summary:
-        handlers: [console]
-        level: WARNING
-    summarizer:
-        handlers: [console, sentry]
-        level: INFO
+formatters:
+    console:
+        format: '%(asctime)s %(message)s'
+        # format: '[%(asctime)s][%(levelname)s] %(name)s %(filename)s:%(funcName)s:%(lineno)d | %(message)s'
+        datefmt: '%H:%M:%S'
 '''
 LOGGING = LOGGING.format(dsn=SENTRY_DSN)
