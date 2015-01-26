@@ -14,5 +14,5 @@ def dispatch():
     "Summarizing new statuses."
     while True:
         queue.enqueue()
-        logger.debug('Sleeping')
+        logger.info('Sleeping')
         time.sleep(queue.FREQUENCY)
