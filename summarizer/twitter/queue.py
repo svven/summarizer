@@ -63,7 +63,7 @@ def enqueue(statuses=[]):
                     description=description, result_ttl=RESULT_TTL) # job_id=unicode(status_id), result_ttl=0
                 status.state = State.BUSY
                 session.commit()
-                logger.debug('Queued: %s', description)
+                logger.info('Queued: %s', description)
     except:
         session.rollback()
         raise

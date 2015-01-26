@@ -46,7 +46,7 @@ loggers:
         level: WARNING
     summarizer:
         handlers: [console, sentry]
-        level: DEBUG
+        level: INFO
 handlers:
     console:
         level: DEBUG
