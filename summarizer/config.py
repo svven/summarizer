@@ -36,14 +36,16 @@ version: 1
 disable_existing_loggers: true
 root:
     level: INFO
-    handlers: [console]
-    propagate: false
+    propagate: true
 loggers:
+    rq:
+        handlers: [console]
+        level: INFO
     summary:
-        # handlers: [console]
+        handlers: [console]
         level: WARNING
     summarizer:
-        handlers: [sentry]
+        handlers: [console, sentry]
         level: DEBUG
 handlers:
     console:
