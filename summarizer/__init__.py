@@ -4,7 +4,7 @@ Summarizer initialization.
 import config, database, redis, summary, aggregator
 
 ## Database
-database.load_config(config)
+database.init(config)
 db = database.db
 
 ## Redis
@@ -16,4 +16,4 @@ summary.config.ADBLOCK_EASYLIST_URL = config.SUMMARY_ADBLOCK_EASYLIST_URL
 summary.config.ADBLOCK_EXTRALIST_URL = config.SUMMARY_ADBLOCK_EXTRALIST_URL
 
 ## Aggregator
-aggregator.load_config(config) # delayed init
+aggregator.init(config) # delayed init
