@@ -17,8 +17,8 @@ from aggregator.models import Reader as AggregatorReader
 
 import datetime
 
-NEW_LINK, EXISTING_LINK, BAD_LINK = (
-    'new', 'existing', 'bad') #, 'restricted'
+NEW_LINK, EXISTING_LINK, UPDATED_LINK, BAD_LINK = (
+    'new', 'existing', 'updated', 'bad') #, 'restricted'
 
 
 class ExistingLinkException(Exception):
@@ -52,8 +52,14 @@ class StatusJob(object):
     def load_mark(self, session):
         "Load mark for reader and link."
         mark = None
+        unmark = self.status.mark # current
+        if unmark: # redo
+            logger.debug("Delete old mark")
+            session.delete(unmark)
+            session.commit()
         twitter_user_id = self.status.user_id
-        reader = session.query(Reader).filter_by(twitter_user_id=twitter_user_id).first()
+        reader = session.query(Reader).\
+            filter_by(twitter_user_id=twitter_user_id).first()
         if not reader:
             reader = Reader(twitter_user_id=twitter_user_id)
             session.add(reader)
@@ -80,6 +86,7 @@ class StatusJob(object):
         Load link from URL.
         Get it from database, or use `summary` to create it. The returned
         `link.url` is most probably different from the `url` input param.
+        When `redo` mode perform resummarization and update current link.
         """
         def check_url(url):
             """
@@ -91,23 +98,40 @@ class StatusJob(object):
             if link: # existing
                 raise ExistingLinkException()
 
-        link = self.get_link(session, url)
-        if link: # existing
-            result = EXISTING_LINK
-        else: # summarize
+        if self.redo: # redo
             s = Summary(url)
-            try:
-                logger.debug("Summarizing")
-                s.extract(check_url=check_url)
-                logger.debug("Summarized")
-                link = Link(s) # new
-                session.add(link)
+            logger.debug("Resummarizing")
+            s.extract()
+            logger.debug("Resummarized")
+            link = self.status.link # current
+            if link and \
+                link.url == s.url: # same url
+                link.load(s)
+                # link.updated = True
+                result = UPDATED_LINK
+            else: # new url
+                link = Link(s)
                 result = NEW_LINK
-            except ExistingLinkException: # existing
-                link = self.get_link(session, s.url)
+            session.add(link)
+        else: # just do
+            link = self.get_link(session, url)
+            if link: # existing
                 result = EXISTING_LINK
-            # except RestrictedLinkException:
-            #     result = RESTRICTED_LINK
+            else: # summarize
+                s = Summary(url)
+                try:
+                    logger.debug("Summarizing")
+                    s.extract(check_url=check_url)
+                    logger.debug("Summarized")
+                except ExistingLinkException: # existing
+                    link = self.get_link(session, s.url)
+                    result = EXISTING_LINK
+                # except RestrictedLinkException:
+                #     result = RESTRICTED_LINK
+                else: # new
+                    link = Link(s)
+                    session.add(link)
+                    result = NEW_LINK
         return link, result
 
     def do(self, session):
@@ -158,10 +182,19 @@ class StatusJob(object):
 
 
 @db.event.listens_for(Mark, "after_insert")
-def after_insert_link(mapper, connection, target):
+def after_insert_mark(mapper, connection, target):
     logger.debug("Marking")
     try:
         reader = AggregatorReader(target.reader_id)
         reader.mark(target.link_id, target.moment)
     except Exception, e:
         logger.error("Aggregator mark failed", exc_info=True)
+
+@db.event.listens_for(Mark, "after_delete")
+def after_delete_mark(mapper, connection, target):
+    logger.debug("Unmarking")
+    try:
+        reader = AggregatorReader(target.reader_id)
+        reader.unmark(target.link_id)
+    except Exception, e:
+        logger.error("Aggregator unmark failed", exc_info=True)
