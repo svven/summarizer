@@ -35,6 +35,7 @@ class StatusJob(object):
             'Bad or missing StatusJob arg.'
 
         self.status = status
+        self.redo = False # yet
 
         self.failed = False # yet
         self.started_at = None
@@ -63,11 +64,12 @@ class StatusJob(object):
         return mark
 
     def get_link(self, session, url):
-        "Get link from database by URL."
+        "Get existing link from database by URL."
         link = None
         status = session.query(Status).\
-            filter(Status.url == url, Status.link_id != None).first()
-        if status: # 
+            filter(Status.url == url, Status.link_id != None, 
+                Status.link_id != self.status.link_id).first()
+        if status:
             link = session.query(Link).get(status.link_id)
         else:
             link = session.query(Link).filter_by(url=url).first()
@@ -79,14 +81,13 @@ class StatusJob(object):
         Get it from database, or use `summary` to create it. The returned
         `link.url` is most probably different from the `url` input param.
         """
-        def check_url(url,
-            get_link=lambda u: self.get_link(session, u)):
+        def check_url(url):
             """
             Raise for existing or restricted URLs.
             Param `url` is actually `summary.url` while extracting.
             """
             logger.debug("Checking")
-            link = get_link(url) # self.get_link(session, url)
+            link = self.get_link(session, url)
             if link: # existing
                 raise ExistingLinkException()
 
@@ -116,6 +117,7 @@ class StatusJob(object):
         logger.debug("Start job")
         assert self.status.url, 'URL missing, can\'t do the job.'
         self.started_at = datetime.datetime.utcnow()
+        self.redo = self.status.link_id is not None # redo
         link = result = None
         url = self.status.url
         try:
