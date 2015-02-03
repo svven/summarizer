@@ -1,0 +1,3 @@
+"""
+Summarizer manager.
+"""
