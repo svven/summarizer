@@ -24,7 +24,7 @@ def enqueue(loop=False):
 
 @manager.command
 def work():
-    "Custom rqworker processing the queue."
+    "Queue worker processing statuses."
     from summarizer import r, summary
     rules = summary.filters.AdblockURLFilter.rules # force
     with Connection(r):
