@@ -13,10 +13,6 @@ logging.config.dictConfig(yaml.load(config.LOGGING))
 from . import r, summary
 rules = summary.filters.AdblockURLFilter.rules # force
 
-from raven import Client
-from rq.contrib.sentry import register_sentry
-client = Client(config.SENTRY_DSN)
-
 import sys
 from rq import Queue, Connection, Worker
 
@@ -27,5 +23,9 @@ QUEUE = config.SUMMARIZER_QUEUE
 with Connection(r):
     qs = map(Queue, sys.argv[1:]) or [Queue(QUEUE)]
     worker = Worker(qs)
-    register_sentry(client, worker)
+    if config.SENTRY_DSN:
+        from raven import Client
+        from rq.contrib.sentry import register_sentry
+        client = Client(config.SENTRY_DSN)
+        register_sentry(client, worker)
     worker.work()
