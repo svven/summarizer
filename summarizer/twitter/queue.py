@@ -46,6 +46,7 @@ def process(status_id):
 def enqueue(statuses=[]):
     "Enqueue statuses to process."
     now = datetime.datetime.utcnow()
+    logger.debug("Start enqueue")
     session = db.Session()
     try:
     	if not statuses:
@@ -69,3 +70,4 @@ def enqueue(statuses=[]):
         raise
     finally:
         session.close()
+        logger.debug("End enqueue")
