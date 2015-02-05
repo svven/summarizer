@@ -49,12 +49,12 @@ def enqueue(statuses=[]):
     logger.debug("Start enqueue")
     session = db.Session()
     try:
-    	if not statuses:
-        	statuses = session.query(Status).\
-	            filter(Status.link_id == None, Status.state == State.NONE).\
-	            order_by(Status.created_at).limit(LIMIT)
+        if not statuses:
+            statuses = session.query(Status).\
+                filter(Status.link_id == None, Status.state == State.NONE).\
+                order_by(Status.created_at).limit(LIMIT)
         else:
-        	statuses = [session.merge(s) for s in statuses]
+            statuses = [session.merge(s) for s in statuses]
         with Connection(r):
             q = Queue(QUEUE)
             for status in statuses:
