@@ -19,6 +19,7 @@ SUMMARY_ADBLOCK_EASYLIST_URL = 'easylist.txt' # offline
   # 'https://easylist-downloads.adblockplus.org/easylist.txt' #
 SUMMARY_ADBLOCK_EXTRALIST_URL = 'extralist.txt' # offline
   # 'https://dl.dropboxusercontent.com/u/134594/svven/extralist.txt' #
+SUMMARY_PHANTOMJS_BIN = ''
 
 ## Aggregator
 AGGREGATOR_REDIS_HOST = 'localhost'
@@ -43,10 +44,10 @@ loggers:
         level: INFO
     summary:
         handlers: [console]
-        level: WARNING
+        level: INFO
     summarizer:
         handlers: [console, sentry]
-        level: INFO
+        level: DEBUG
 handlers:
     console:
         level: DEBUG

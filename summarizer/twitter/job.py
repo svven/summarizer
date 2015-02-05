@@ -10,8 +10,7 @@ from summary import Summary, HTMLParseError
 from requests.exceptions import HTTPError, Timeout
 
 from database.db import IntegrityError
-from database.twitter.models import User, Status
-from database.news.models import Link, Reader, Source, Mark
+from database.models import *
 
 from aggregator.models import Reader as AggregatorReader
 
