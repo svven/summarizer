@@ -7,7 +7,7 @@ raven==5.1.1
 redis==2.10.3
 rq==0.4.6 # git+git@github.com:nvie/rq.git@master#egg=rq
 selenium==2.44.0
--e ../extraction # git+https://github.com/svven/extraction.git@master#egg=extraction
--e ../summary # git+https://github.com/svven/summary.git@master#egg=summary-extraction # summary-extraction==0.2
--e ../database # git+ssh://git@bitbucket.org/svven/database.git@master#egg=svven-database
--e ../aggregator # git+ssh://git@bitbucket.org/svven/aggregator.git@master#egg=svven-aggregator
+git+https://github.com/svven/extraction.git@master#egg=extraction # -e ../extraction
+git+https://github.com/svven/summary.git@master#egg=summary-extraction # -e ../summary # summary-extraction==0.2
+git+ssh://git@bitbucket.org/svven/database.git@master#egg=svven-database # -e ../database
+git+ssh://git@bitbucket.org/svven/aggregator.git@master#egg=svven-aggregator # -e ../aggregator
