@@ -13,17 +13,17 @@ from rq import Queue, Connection, Worker
 
 
 @manager.command
-def enqueue(loop=False):
+def enqueue(burst=False):
     "Enqueue new statuses to be processed."
     from summarizer.twitter import queue
     while True:
         queue.enqueue()
-        if not loop:
+        if burst:
             break
         time.sleep(queue.FREQUENCY)
 
 @manager.command
-def work():
+def work(burst=False):
     "Queue worker processing statuses."
     from summarizer import r, summary
     rules = summary.filters.AdblockURLFilter.rules # force
@@ -34,7 +34,7 @@ def work():
             from rq.contrib.sentry import register_sentry
             client = Client(config.SENTRY_DSN)
             register_sentry(client, worker)
-        worker.work()
+        worker.work(burst)
 
 @manager.command
 def process(status_id):
