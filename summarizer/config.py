@@ -1,14 +1,16 @@
 """
 Config settings for summarizer app.
 """
+import os
 
 ## SQLAlchemy
 ## http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html
 # SQLALCHEMY_ECHO = sqlalchemy_echo = True
-SQLALCHEMY_DATABASE_URI = sqlalchemy_url = 'postgresql://svven@localhost/svven'
+DATABASE_HOST = os.environ.get('DATABASE_HOST', 'localhost')
+SQLALCHEMY_DATABASE_URI = sqlalchemy_url = 'postgresql://svven@%s/svven' % DATABASE_HOST
 
 ## RQ (Redis Queue)
-RQ_REDIS_HOST = 'localhost'
+RQ_REDIS_HOST = os.environ.get('RQ_REDIS_HOST', 'localhost')
 RQ_REDIS_PORT = 6379
 RQ_REDIS_DB = 0
 QUEUES = (SUMMARIZER_QUEUE, ) = ("summarizer", )
@@ -22,7 +24,7 @@ SUMMARY_ADBLOCK_EXTRALIST_URL = 'extralist.txt' # offline
 SUMMARY_PHANTOMJS_BIN = ''
 
 ## Aggregator
-AGGREGATOR_REDIS_HOST = 'localhost'
+AGGREGATOR_REDIS_HOST = os.environ.get('AGGREGATOR_REDIS_HOST', 'localhost')
 AGGREGATOR_REDIS_PORT = 6379
 AGGREGATOR_REDIS_DB = 1
 
