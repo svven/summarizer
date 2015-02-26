@@ -37,10 +37,11 @@ def work(burst=False):
         worker.work(burst)
 
 @manager.command
-def process(status_id):
-    "Process specified status right now."
+def process(status_ids):
+    "Process comma separated status ids."
     from summarizer.twitter import queue
-    queue.process(status_id)
+    for status_id in str(status_ids).split(','):
+        queue.process(status_id.strip())
 
 
 if __name__ == '__main__':
