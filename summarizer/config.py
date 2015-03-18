@@ -22,9 +22,6 @@ SUMMARY_ADBLOCK_EASYLIST_URL = 'easylist.txt' # offline
 SUMMARY_ADBLOCK_EXTRALIST_URL = 'extralist.txt' # offline
   # 'https://dl.dropboxusercontent.com/u/134594/svven/extralist.txt' #
 SUMMARY_PHANTOMJS_BIN = '/usr/local/bin/phantomjs'
-SUMMARY_PHANTOMJS_SITES = [
-    'readwrite.com', 'html5-ninja.com', 'rally.org',
-]
 
 ## Aggregator
 AGGREGATOR_REDIS_HOST = os.environ.get('AGGREGATOR_REDIS_HOST', 'localhost')
