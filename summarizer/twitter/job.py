@@ -63,6 +63,9 @@ class StatusJob(object):
             reader = Reader(twitter_user_id=twitter_user_id)
             session.add(reader)
             session.commit() # atomic
+        elif reader.ignored:
+            logger.warning("Ignored: %s", unicode(reader).encode('utf8'))
+            return # no mark
         mark = Mark(self.status, reader.id)
         session.add(mark)
         # reader.marks.append(mark)
@@ -181,19 +184,24 @@ class StatusJob(object):
 
 
 @db.event.listens_for(Mark, "after_insert")
-def after_insert_mark(mapper, connection, target):
+def after_insert_mark(mapper, connection, mark):
     logger.debug("Marking")
+    if mark.link.ignored:
+        logger.warning("Ignored: %s", 
+            unicode(mark.link).encode('utf8'),
+            extra={'data': {'id': mark.twitter_status_id, 'url': mark.link.url}})
+        return # don't aggregate
     try:
-        reader = AggregatorReader(target.reader_id)
-        reader.mark(target.link_id, target.moment)
+        reader = AggregatorReader(mark.reader_id)
+        reader.mark(mark.link_id, mark.moment)
     except Exception, e:
         logger.error("Aggregator mark failed", exc_info=True)
 
 @db.event.listens_for(Mark, "after_delete")
-def after_delete_mark(mapper, connection, target):
+def after_delete_mark(mapper, connection, mark):
     logger.debug("Unmarking")
     try:
-        reader = AggregatorReader(target.reader_id)
-        reader.unmark(target.link_id)
+        reader = AggregatorReader(mark.reader_id)
+        reader.unmark(mark.link_id)
     except Exception, e:
         logger.error("Aggregator unmark failed", exc_info=True)
