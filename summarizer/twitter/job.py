@@ -67,7 +67,7 @@ class StatusJob(object):
         elif reader.ignored:
             logger.warning("Ignored: %s", unicode(reader).encode('utf8'))
         elif status.link.ignored:
-            logger.warning("Ignored: %s", unicode(mark.link).encode('utf8'),
+            logger.warning("Ignored: %s", unicode(status.link).encode('utf8'),
                 extra={'data': {'id': status.status_id, 'url': status.url}})
         else:
             mark = Mark(status, reader.id)
