@@ -51,12 +51,13 @@ class StatusJob(object):
     def load_mark(self, session):
         "Load mark for reader and link."
         mark = None
-        unmark = self.status.mark # current
+        status = self.status
+        unmark = status.mark # current
         if unmark: # redo
             logger.debug("Delete old mark")
             session.delete(unmark)
             session.commit()
-        twitter_user_id = self.status.user_id
+        twitter_user_id = status.user_id
         reader = session.query(Reader).\
             filter_by(twitter_user_id=twitter_user_id).first()
         if not reader:
@@ -65,10 +66,13 @@ class StatusJob(object):
             session.commit() # atomic
         elif reader.ignored:
             logger.warning("Ignored: %s", unicode(reader).encode('utf8'))
-            return # no mark
-        mark = Mark(self.status, reader.id)
-        session.add(mark)
-        # reader.marks.append(mark)
+        elif status.link.ignored:
+            logger.warning("Ignored: %s", unicode(mark.link).encode('utf8'),
+                extra={'data': {'id': status.status_id, 'url': status.url}})
+        else:
+            mark = Mark(status, reader.id)
+            session.add(mark)
+            # reader.marks.append(mark)
         return mark
 
     def get_link(self, session, url):
@@ -186,11 +190,6 @@ class StatusJob(object):
 @db.event.listens_for(Mark, "after_insert")
 def after_insert_mark(mapper, connection, mark):
     logger.debug("Marking")
-    if mark.link.ignored:
-        logger.warning("Ignored: %s", 
-            unicode(mark.link).encode('utf8'),
-            extra={'data': {'id': mark.twitter_status_id, 'url': mark.link.url}})
-        return # don't aggregate
     try:
         reader = AggregatorReader(mark.reader_id)
         reader.mark(mark.link_id, mark.moment)
