@@ -22,19 +22,21 @@ SUMMARY_ADBLOCK_EASYLIST_URL = 'easylist.txt' # offline
 SUMMARY_ADBLOCK_EXTRALIST_URL = 'extralist.txt' # offline
   # 'https://dl.dropboxusercontent.com/u/134594/svven/extralist.txt' #
 SUMMARY_USEFUL_QUERY_KEYS = [
-    'v', 's', 'id', 'story_fbid', 'set', 'q', 'cid', 'tbm', 'fbid', 'u', 'p', 'next',
-    'article_id', 'articleid', 'a', 'gid', 'mid', 'itemid', 'newsid', 'storyid', 'list',
-    'piano_t', 'piano_d', 'page', 'diff', 'editors', 'storyId', 'l', 'm', 'video', 'kanal',
-    'pid', 'sid', 'item', 'f', 't', 'forum_id'
+    'v', 's', 'id', 'story_fbid', 'set', 'q', 'cid', 'tbm', 'fbid', 'u', 'p', 
+    'next', 'article_id', 'articleid', 'a', 'gid', 'mid', 'itemid', 'newsid', 
+    'storyid', 'list', 'piano_t', 'piano_d', 'page', 'diff', 'editors', 
+    'storyId', 'l', 'm', 'video', 'kanal', 'pid', 'sid', 'item', 'f', 't', 
+    'forum_id', 
 ]
 SUMMARY_PHANTOMJS_BIN = '/usr/local/bin/phantomjs'
 SUMMARY_PHANTOMJS_SITES = [
-    'readwrite.com', 'html5-ninja.com', 'rally.org', 'blogs.ft.com', 'i100.independent.co.uk', 
-    'www.behance.net', 'www.psmag.com', 'po.st',
+    'readwrite.com', 'html5-ninja.com', 'rally.org', 'blogs.ft.com', 
+    'i100.independent.co.uk',  'www.behance.net', 'www.psmag.com', 'po.st',
 ]
 SUMMARY_NONCANONIC_SITES = [
-    'docquery.fec.gov', 'c2.com', 'www.lukew.com', 'cyberdust.com', 'forums.station.sony.com',
-    'www.ecommercebytes.com', 'www.residentadvisor.net', 'hire.jobvite.com', 'everydaycarry.com',
+    'docquery.fec.gov', 'c2.com', 'www.lukew.com', 'cyberdust.com', 
+    'forums.station.sony.com', 'www.ecommercebytes.com', 
+    'www.residentadvisor.net', 'hire.jobvite.com', 'everydaycarry.com',
 ]
 
 ## Aggregator
