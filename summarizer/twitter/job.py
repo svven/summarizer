@@ -48,14 +48,14 @@ class StatusJob(object):
         status = session.merge(self.status) # just in case
         status.link_id = self.link.id
 
-    def load_mark(self, session):
-        "Load mark for reader and link."
-        mark = None
+    def load_pick(self, session):
+        "Load pick for reader and link."
+        pick = None
         status = self.status
-        unmark = status.mark # current
-        if unmark: # redo
-            logger.debug("Delete old mark")
-            session.delete(unmark)
+        unpick = status.pick # current
+        if unpick: # redo
+            logger.debug("Delete old pick")
+            session.delete(unpick)
             session.commit()
         twitter_user_id = status.user_id
         reader = session.query(Reader).\
@@ -70,10 +70,10 @@ class StatusJob(object):
             logger.warning("Ignored: %s", unicode(status.link).encode('utf8'),
                 extra={'data': {'id': status.status_id, 'url': status.url}})
         else:
-            mark = Mark(status, reader.id)
-            session.add(mark)
-            # reader.marks.append(mark)
-        return mark
+            pick = Pick(status, reader.id)
+            session.add(pick)
+            # reader.picks.append(pick)
+        return pick
 
     def get_link(self, session, url):
         "Get existing link from database by URL."
@@ -181,26 +181,26 @@ class StatusJob(object):
         if link and link.id: # new or existing
             self.link = link
             self.update_status(session) # sets self.status.link_id
-            self.load_mark(session) # needs self.status.link_id set
+            self.load_pick(session) # needs self.status.link_id set
         session.commit() # outside
         self.ended_at = datetime.datetime.utcnow()
         logger.debug("End job")
 
 
-@db.event.listens_for(Mark, "after_insert")
-def after_insert_mark(mapper, connection, mark):
-    logger.debug("Marking")
+@db.event.listens_for(Pick, "after_insert")
+def after_insert_pick(mapper, connection, pick):
+    logger.debug("Picking")
     try:
-        reader = AggregatorReader(mark.reader_id)
-        reader.mark(mark.link_id, mark.moment)
+        reader = AggregatorReader(pick.reader_id)
+        reader.pick(pick.link_id, pick.moment)
     except Exception, e:
-        logger.error("Aggregator mark failed", exc_info=True)
+        logger.error("Aggregator pick failed", exc_info=True)
 
-@db.event.listens_for(Mark, "after_delete")
-def after_delete_mark(mapper, connection, mark):
-    logger.debug("Unmarking")
+@db.event.listens_for(Pick, "after_delete")
+def after_delete_pick(mapper, connection, pick):
+    logger.debug("Unpicking")
     try:
-        reader = AggregatorReader(mark.reader_id)
-        reader.unmark(mark.link_id)
+        reader = AggregatorReader(pick.reader_id)
+        reader.unpick(pick.link_id)
     except Exception, e:
-        logger.error("Aggregator unmark failed", exc_info=True)
+        logger.error("Aggregator unpick failed", exc_info=True)
