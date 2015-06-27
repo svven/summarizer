@@ -47,7 +47,7 @@ AGGREGATOR_REDIS_DB = 1
 AGGREGATOR_BASE_UXTIME = 1420070400 # datetime(2015, 1, 1, 0, 0) # 1
 
 ## Sentry
-SENTRY_DSN = ''
+SENTRY_DSN = 'https://a5087c7f1fc344cbbc37e71f846a184e:98b7703681d14154b4f14b827f6acb9f@app.getsentry.com/46868'
 
 ## Logging
 LOGGING = '''
