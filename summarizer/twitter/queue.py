@@ -16,6 +16,7 @@ QUEUE = config.SUMMARIZER_QUEUE
 LIMIT = 300 # statuses
 FREQUENCY = 1 * 60 # 1 min
 RESULT_TTL = 1 * 60 # 1 min
+TIMEOUT = 5 * 60 # 5 min
 
 
 def process(status_id):
@@ -61,7 +62,7 @@ def enqueue(statuses=[]):
                 status_id = status.status_id
                 description = unicode(status).encode('utf8')
                 job = q.enqueue_call(func=process, args=(status_id,), 
-                    description=description, result_ttl=RESULT_TTL) # job_id=unicode(status_id), result_ttl=0
+                    description=description, result_ttl=RESULT_TTL, timeout=TIMEOUT) # job_id=unicode(status_id), result_ttl=0
                 status.state = State.BUSY
                 session.commit()
                 logger.info('Queued: %s', description)
