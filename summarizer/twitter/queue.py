@@ -38,9 +38,12 @@ def process(status_id):
             exc_info=True, extra={'data': {'id': status.id, 'url': status.url}})
         raise
     finally:
-        status = session.merge(status) # no need
-        status.state = failed and State.FAIL or State.DONE
-        session.commit()
+        try:
+            status = session.merge(status) # no need
+            status.state = failed and State.FAIL or State.DONE
+            session.commit()
+        except:
+            session.rollback()
         session.close()
         logger.debug("End process")
 
