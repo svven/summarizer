@@ -174,7 +174,7 @@ class StatusJob(object):
                 unicode(link or self.status).encode('utf8'),
                 exc_info=True, extra={'data': {'id': self.status.id, 'url': url}})
         else:
-            logger.info(result.capitalize() + ": %s", 
+            logger.debug(result.capitalize() + ": %s", 
                 unicode(link or self.status).encode('utf8'),
                 extra={'data': {'id': self.status.id, 'url': url}})
         self.result = result

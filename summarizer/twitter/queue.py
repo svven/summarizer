@@ -29,13 +29,14 @@ def process(status_id):
         job = StatusJob(status)
         job.do(session)
         failed = job.failed # may be True
+        logger.info("Proced %s: %s",
+            unicode(status).encode('utf8'), job.result)
         return job.result
     except:
         session.rollback()
         failed = True # obviously
-        logger.warning("Fail: %s", 
-            unicode(status).encode('utf8'),
-            exc_info=True, extra={'data': {'id': status.id, 'url': status.url}})
+        logger.error("Failed %s: %s", 
+            unicode(status).encode('utf8'), repr(e))
         raise
     finally:
         try:
@@ -68,7 +69,7 @@ def enqueue(statuses=[]):
                     description=description, result_ttl=RESULT_TTL, timeout=TIMEOUT) # job_id=unicode(status_id), result_ttl=0
                 status.state = State.BUSY
                 session.commit()
-                logger.info('Queued: %s', description)
+                logger.debug('Queued: %s', description)
     except:
         session.rollback()
         raise
