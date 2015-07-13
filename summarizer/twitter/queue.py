@@ -32,7 +32,7 @@ def process(status_id):
         logger.info("Proced %s: %s",
             unicode(status).encode('utf8'), job.result)
         return job.result
-    except:
+    except Exception, e:
         session.rollback()
         failed = True # obviously
         logger.error("Failed %s: %s", 
