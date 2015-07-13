@@ -1,7 +1,7 @@
 """
 Config settings for summarizer app.
 """
-import os
+import os, socket
 
 ## SQLAlchemy
 ## http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html
