@@ -46,9 +46,6 @@ AGGREGATOR_REDIS_DB = 1
 
 AGGREGATOR_BASE_UXTIME = 1420070400 # datetime(2015, 1, 1, 0, 0) # 1
 
-## Sentry
-SENTRY_DSN = '' # 'https://a5087c7f1fc344cbbc37e71f846a184e:98b7703681d14154b4f14b827f6acb9f@app.getsentry.com/46868'
-
 ## Papertrail
 HOSTNAME = socket.gethostname()
 PAPERTRAIL_HOST = 'logs3.papertrailapp.com'
@@ -70,18 +67,14 @@ loggers:
         level: INFO
     summarizer:
         handlers: [console, papertrail]
-        level: DEBUG
+        level: INFO
 handlers:
     console:
         level: DEBUG
         class: logging.StreamHandler
         formatter: console
-    sentry:
-        level: INFO
-        class: raven.handlers.logging.SentryHandler
-        dsn: {sentry_dsn}
     papertrail:
-        level: INFO
+        level: WARNING
         class: logging.handlers.SysLogHandler
         address: [{papertrail_host}, {papertrail_port}]
         formatter: papertrail
@@ -94,5 +87,5 @@ formatters:
         format: '%(name)s {hostname}.%(process)d %(levelname)s: %(message)s'
         datefmt: '%H:%M:%S'
 '''
-LOGGING = LOGGING.format(sentry_dsn=SENTRY_DSN, hostname=HOSTNAME,
+LOGGING = LOGGING.format(hostname=HOSTNAME,
     papertrail_host=PAPERTRAIL_HOST, papertrail_port=PAPERTRAIL_PORT)

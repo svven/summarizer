@@ -29,11 +29,6 @@ def work(burst=False):
     rules = summary.filters.AdblockURLFilter.rules # force
     with Connection(r):
         worker = Worker([Queue(config.SUMMARIZER_QUEUE)])
-        if config.SENTRY_DSN:
-            from raven import Client
-            from rq.contrib.sentry import register_sentry
-            client = Client(config.SENTRY_DSN)
-            register_sentry(client, worker)
         worker.work(burst)
 
 @manager.command
