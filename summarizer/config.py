@@ -26,7 +26,7 @@ SUMMARY_USEFUL_QUERY_KEYS = [
     'next', 'article_id', 'articleid', 'a', 'gid', 'mid', 'itemid', 'newsid', 
     'storyid', 'list', 'piano_t', 'piano_d', 'page', 'diff', 'editors', 
     'storyId', 'l', 'm', 'video', 'kanal', 'pid', 'sid', 'item', 'f', 't', 
-    'forum_id', 
+    'forum_id', 'path', 'url',
 ]
 SUMMARY_PHANTOMJS_BIN = '/usr/local/bin/phantomjs'
 SUMMARY_PHANTOMJS_SITES = [
@@ -37,6 +37,7 @@ SUMMARY_NONCANONIC_SITES = [
     'docquery.fec.gov', 'c2.com', 'www.lukew.com', 'cyberdust.com', 
     'forums.station.sony.com', 'www.ecommercebytes.com', 
     'www.residentadvisor.net', 'hire.jobvite.com', 'everydaycarry.com',
+    'www.google.com',
 ]
 
 ## Aggregator
