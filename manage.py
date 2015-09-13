@@ -36,7 +36,10 @@ def process(status_ids):
     "Process comma separated status ids."
     from summarizer.twitter import queue
     for status_id in str(status_ids).split(','):
-        queue.process(status_id.strip())
+        try:
+            queue.process(status_id.strip())
+        except:
+            pass
 
 
 if __name__ == '__main__':
