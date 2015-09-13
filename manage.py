@@ -38,6 +38,8 @@ def process(status_ids):
     for status_id in str(status_ids).split(','):
         try:
             queue.process(status_id.strip())
+        except KeyboardInterrupt:
+            raise
         except:
             pass
 
