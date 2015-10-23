@@ -1,6 +1,8 @@
 """
 Summarizer manager.
 """
+import summarizer; summarizer.init()
+
 from summarizer import config
 import logging, logging.config, yaml
 logging.config.dictConfig(yaml.load(config.LOGGING))
