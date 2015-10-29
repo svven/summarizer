@@ -42,8 +42,8 @@ def process(status_ids):
             queue.process(status_id.strip())
         except KeyboardInterrupt:
             raise
-        except:
-            pass
+        except Exception, e:
+            print 'Failed (%s): %s' % (status_id, repr(e))
 
 
 if __name__ == '__main__':
