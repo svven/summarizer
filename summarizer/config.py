@@ -46,7 +46,7 @@ SUMMARY_PHANTOMJS_BIN = '/usr/local/bin/phantomjs'
 SUMMARY_PHANTOMJS_SITES = [
     'readwrite.com', 'html5-ninja.com', 'rally.org', 'blogs.ft.com', 
     'i100.independent.co.uk',  'www.behance.net', 'www.psmag.com', 'po.st',
-    'www.forbes.com', 'www.newsweek.com',
+    # 'www.forbes.com', 'www.newsweek.com',
 ]
 SUMMARY_NONCANONIC_SITES = [
     'docquery.fec.gov', 'c2.com', 'www.lukew.com', 'cyberdust.com', 
