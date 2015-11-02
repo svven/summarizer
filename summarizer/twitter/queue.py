@@ -22,7 +22,7 @@ TIMEOUT = 5 * 60 # 5 min
 def process(status_id):
     "Process specified status."
     logger.debug("Start process")
-    session = db.Session()
+    session = db.session()
     failed = False # yet
     status = session.query(Status).filter_by(status_id=status_id).one()
     try:
@@ -52,7 +52,7 @@ def enqueue(statuses=[]):
     "Enqueue statuses to process."
     now = datetime.datetime.utcnow()
     logger.debug("Start enqueue")
-    session = db.Session()
+    session = db.session()
     try:
         if not statuses:
             statuses = session.query(Status).\
