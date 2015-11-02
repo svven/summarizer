@@ -57,7 +57,7 @@ def enqueue(statuses=[]):
         if not statuses:
             statuses = session.query(Status).\
                 filter(Status.state == State.NONE).\
-                order_by(Status.created_at).limit(LIMIT)
+                order_by(Status.created_at.desc()).limit(LIMIT)
         else:
             statuses = [session.merge(s) for s in statuses]
         with Connection(r):
