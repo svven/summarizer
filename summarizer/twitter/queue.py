@@ -14,7 +14,7 @@ from rq import Connection, Queue
 
 QUEUE = config.SUMMARIZER_QUEUE
 LIMIT = 300 # statuses
-FREQUENCY = 1 * 60 # 1 min
+FREQUENCY = 1 # 1 sec
 RESULT_TTL = 1 * 60 # 1 min
 TIMEOUT = 5 * 60 # 5 min
 
@@ -57,19 +57,22 @@ def enqueue(statuses=[]):
         if not statuses:
             statuses = session.query(Status).\
                 filter(Status.state == State.NONE).\
-                order_by(Status.created_at.desc()).limit(LIMIT)
+                order_by(Status.created_at.desc()).yield_per(LIMIT)
         else:
             statuses = [session.merge(s) for s in statuses]
         with Connection(r):
             q = Queue(QUEUE)
+            i = 1
             for status in statuses:
                 status_id = status.status_id
                 description = unicode(status).encode('utf8')
                 job = q.enqueue_call(func=process, args=(status_id,), 
                     description=description, result_ttl=RESULT_TTL, timeout=TIMEOUT) # job_id=unicode(status_id), result_ttl=0
                 status.state = State.BUSY
-                session.commit()
                 logger.debug('Queued: %s', description)
+                if i % LIMIT == 0:
+                    session.commit()
+                i += 1
     except:
         session.rollback()
         raise
