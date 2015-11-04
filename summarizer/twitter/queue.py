@@ -57,12 +57,11 @@ def enqueue(statuses=[]):
         if not statuses:
             statuses = session.query(Status).\
                 filter(Status.state == State.NONE).\
-                order_by(Status.created_at.desc()).yield_per(LIMIT)
+                order_by(Status.created_at.desc()).limit(LIMIT)
         else:
             statuses = [session.merge(s) for s in statuses]
         with Connection(r):
             q = Queue(QUEUE)
-            i = 1
             for status in statuses:
                 status_id = status.status_id
                 description = unicode(status).encode('utf8')
@@ -70,9 +69,7 @@ def enqueue(statuses=[]):
                     description=description, result_ttl=RESULT_TTL, timeout=TIMEOUT) # job_id=unicode(status_id), result_ttl=0
                 status.state = State.BUSY
                 logger.debug('Queued: %s', description)
-                if i % LIMIT == 0:
-                    session.commit()
-                i += 1
+        session.commit()
     except:
         session.rollback()
         raise
