@@ -40,19 +40,19 @@ SUMMARY_USEFUL_QUERY_KEYS = [
     'next', 'article_id', 'articleid', 'a', 'gid', 'mid', 'itemid', 'newsid', 
     'storyid', 'list', 'piano_t', 'piano_d', 'page', 'diff', 'editors', 
     'storyId', 'l', 'm', 'video', 'kanal', 'pid', 'sid', 'item', 'f', 't', 
-    'forum_id', 'path', 'url',
+    'forum_id', 'path', 'url', 'postID',
 ]
 SUMMARY_PHANTOMJS_BIN = '/usr/local/bin/phantomjs'
 SUMMARY_PHANTOMJS_SITES = [
     'readwrite.com', 'html5-ninja.com', 'rally.org', 'blogs.ft.com', 
     'i100.independent.co.uk',  'www.behance.net', 'www.psmag.com', 'po.st',
-    # 'www.forbes.com', 'www.newsweek.com',
+    'www.forbes.com', 'www.newsweek.com',
 ]
 SUMMARY_NONCANONIC_SITES = [
     'docquery.fec.gov', 'c2.com', 'www.lukew.com', 'cyberdust.com', 
     'forums.station.sony.com', 'www.ecommercebytes.com', 
     'www.residentadvisor.net', 'hire.jobvite.com', 'everydaycarry.com',
-    'www.google.com',
+    'www.google.com', 'www.liveleak.com',
 ]
 
 ## Aggregator
