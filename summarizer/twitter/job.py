@@ -193,6 +193,7 @@ def after_insert_pick(mapper, connection, pick):
     try:
         reader = AggregatorReader(pick.reader_id)
         reader.pick(pick.link_id, pick.moment)
+		reader.rem_picks() # real time clean up
     except Exception, e:
         logger.error("Aggregator pick failed", exc_info=True)
 
