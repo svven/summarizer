@@ -54,6 +54,10 @@ SUMMARY_NONCANONIC_SITES = [
     'www.residentadvisor.net', 'hire.jobvite.com', 'everydaycarry.com',
     'www.google.com', 'www.liveleak.com',
 ]
+SUMMARY_RESTRICTED_SITES = [
+    'www.swarmapp.com', 'tweetedtimes.com', 'paper.li',
+]
+
 
 ## Aggregator
 AGGREGATOR_REDIS_HOST = os.environ.get('AGGREGATOR_REDIS_HOST', 'localhost')

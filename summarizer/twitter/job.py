@@ -11,13 +11,14 @@ from requests.exceptions import HTTPError, Timeout
 
 from database.db import IntegrityError
 from database.models import *
+from database.utils import urlsite
 
 from aggregator.models import Reader as AggregatorReader
 
 import datetime
 
-NEW_LINK, EXISTING_LINK, UPDATED_LINK, BAD_LINK = (
-    'new', 'existing', 'updated', 'bad') #, 'restricted'
+NEW_LINK, EXISTING_LINK, UPDATED_LINK, BAD_LINK, RESTRICTED_LINK = (
+    'new', 'existing', 'updated', 'bad', 'restricted')
 
 
 class ExistingLinkException(Exception):
@@ -100,6 +101,8 @@ class StatusJob(object):
             Param `url` is actually `summary.url` while extracting.
             """
             logger.debug("Checking")
+            if urlsite(url) in config.SUMMARY_RESTRICTED_SITES:
+                raise RestrictedLinkException()
             link = self.get_link(session, url)
             if link: # existing
                 raise ExistingLinkException()
@@ -132,8 +135,8 @@ class StatusJob(object):
                 except ExistingLinkException: # existing
                     link = self.get_link(session, s.url)
                     result = EXISTING_LINK
-                # except RestrictedLinkException:
-                #     result = RESTRICTED_LINK
+                except RestrictedLinkException:
+                    result = RESTRICTED_LINK
                 else: # new
                     link = Link(s)
                     session.add(link)
